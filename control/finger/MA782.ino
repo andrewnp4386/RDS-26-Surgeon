@@ -88,6 +88,33 @@ float* getJointAngles() {
   return jointDegs;
 }
 
+float* EstimateTipPosition(float* jointAngles) {
+  // Simple geometric model based on link lengths and joint angles
+  // Link Lengths (in mm)
+  float L_SPLAY = 24.0f;
+  float L_MCP = 44.0f;
+  float L_PIP = 39.0f;
+  float L_DIP = 22.0f;
+  float Ltotal = L_SPLAY + L_MCP + L_PIP + L_DIP;
+
+  // Convert angles from degrees to radians for calculation
+  float theta0 = jointAngles[0] * DEG_TO_RAD; // Splay
+  float theta1 = jointAngles[1] * DEG_TO_RAD; // MCP
+  float theta2 = jointAngles[2] * DEG_TO_RAD; // PIP
+  float theta3 = jointAngles[3] * DEG_TO_RAD; // DIP
+
+  // Calculate (x, y) position of the fingertip in the plane of motion
+  float x = Ltotal - (L_MCP * cos(theta1) +  L_PIP * cos(theta1 + theta2) + L_DIP * cos(theta1 + theta2 + theta3))*cos(theta0);
+  float y = (L_MCP * cos(theta1) +  L_PIP * cos(theta1 + theta2) + L_DIP * cos(theta1 + theta2 + theta3))*sin(theta0);
+  float z = L_MCP * sin(theta1) +  L_PIP * sin(theta1 + theta2) + L_DIP * sin(theta1 + theta2 + theta3);
+  static float tipPos[3];
+  tipPos[0] = x;
+  tipPos[1] = y;
+  tipPos[2] = z; 
+  return tipPos;
+}
+
+
 void zeroJoints() {
   for (int i = 0; i < NUM_ENC; i++) {
     raw_w[i] = spiRead16(CS_PINS[i]);

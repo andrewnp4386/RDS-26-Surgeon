@@ -29,6 +29,11 @@ void handleCommand() {
     Serial.println("ACK: Joint PID DISABLED.");
     return;
   }
+  
+  if (cmd == "PRINT"){
+    printStatus();
+    return;
+  }
 
   if (cmd == "FORCE SENSOR ON") { 
     useForceSensor = true; 

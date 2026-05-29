@@ -94,9 +94,11 @@ void enableAllMotors();
 void setMotorTorque(int motorIdx, float torqueNm);
 void runSafeHomeCommand();
 void printMotorPositions();
+void printStatus();
 
 void setupMA782();
 float* getJointAngles();
+float* EstimateTipPosition(float* tip_out);
 void zeroJoints();
 float getForce();
 

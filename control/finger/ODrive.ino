@@ -136,6 +136,22 @@ void printMotorPositions() {
   }
 }
 
+void printStatus() {
+  Serial.println("===== Motor Positions =====");
+  for (int i = 0; i < NUM_MOTORS; i++) {
+    if (!odrive_data[i].received_feedback) continue;
+    float rawTurns = odrive_data[i].last_feedback.Pos_Estimate;
+    Serial.printf("Motor %d: raw=%.4f, zero=%.4f, target=%.4f\n", i, rawTurns, motor_zero_offsets[i], currentMotorTarget[i]);
+  }
+  Serial.println("===== Joint Angles =====");
+  float* joints = getJointAngles();
+  Serial.printf("Splay: %.2f | MCP: %.2f | PIP: %.2f | DIP: %.2f\n", joints[0], joints[1], joints[2], joints[3]);
+  Serial.println("===== Estimated Tip Position =====");
+  float* tip = getTipPosition(joints);
+  Serial.printf("X: %.2f | Y: %.2f | Z: %.2f\n", tip[0], tip[1], tip[2]);
+  }
+
+}
 bool activeJointsNearZero(float joints[4]) { 
   return 
   // Temporarily bypass Splay (joints[0]) check due to mechanical hardware issues.
